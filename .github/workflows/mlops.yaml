@@ -22,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: '3.11'
           cache: pip
       - name: Install dependencies
         run: pip install --requirement requirements-freeze.txt
@@ -36,7 +36,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: iterative/setup-cml@v2
         with:
-          version: '0.20.6'
+          version: 'latest'
       - name: Create CML report
         if: github.event_name == 'pull_request'
         env:
