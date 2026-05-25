@@ -36,7 +36,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: iterative/setup-cml@v2
         with:
-          version: '0.20.6'
+          version: 'latest'
       - name: Create CML report
         if: github.event_name == 'pull_request'
         env:
