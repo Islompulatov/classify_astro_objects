@@ -108,7 +108,7 @@ jobs:
           # Push the container to the Container Registry
           docker push --all-tags ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier 
 
-            - name: Get Google Cloud's Kubernetes credentials
+      - name: Get Google Cloud's Kubernetes credentials
         if: github.ref == 'refs/heads/main'
         uses: google-github-actions/get-gke-credentials@v3
         with:
