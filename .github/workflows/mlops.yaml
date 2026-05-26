@@ -29,6 +29,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+        fetch-depth: 0
+        persist-credentials: true
       - name: Configure Automated Git Profile
         run: |
           git config --global user.name "github-actions[bot]"
