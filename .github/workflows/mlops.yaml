@@ -22,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          python-version: '3.13'
           cache: pip
       - name: Install dependencies
         run: pip install --requirement requirements-freeze.txt
@@ -36,7 +36,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: iterative/setup-cml@v2
         with:
-          version: 'latest'
+          version: '0.20.6'
       - name: Create CML report
         if: github.event_name == 'pull_request'
         env:
@@ -85,7 +85,6 @@ jobs:
 
           # Publish the CML report
           cml comment update --target=pr --publish report.md
-
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -106,8 +105,7 @@ jobs:
             --image-tag ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:latest \
             --image-tag ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:${{ github.sha }}
           # Push the container to the Container Registry
-          docker push --all-tags ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier 
-
+          docker push --all-tags ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier
       - name: Get Google Cloud's Kubernetes credentials
         if: github.ref == 'refs/heads/main'
         uses: google-github-actions/get-gke-credentials@v3
@@ -123,4 +121,4 @@ jobs:
         run: |
           kubectl apply \
             -f kubernetes/deployment.yaml \
-            -f kubernetes/service.yaml       
+            -f kubernetes/service.yaml     
