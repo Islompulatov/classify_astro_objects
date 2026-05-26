@@ -35,6 +35,13 @@ jobs:
       - name: Configure Automated Git Profile
         run: |
           git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"
+          
+          # 🛠️ ADD THIS CRITICAL LINE TO STOP GIT HELPERS FROM INTERCEPTING AUTH
+          git config --global credential.helper ""    
+      - name: Configure Automated Git Profile
+        run: |
+          git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@://github.com"  
       - name: Setup Python
         uses: actions/setup-python@v6
