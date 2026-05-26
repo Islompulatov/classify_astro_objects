@@ -1,5 +1,10 @@
 name: MLOps
 
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: write
+
 on:
   # Runs on pushes targeting main branch
   push:
@@ -12,6 +17,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  GCP_CONTAINER_REGISTRY_HOST: ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}
+
 jobs:
   train-report-publish-and-deploy:
     permissions: write-all
@@ -19,10 +28,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+      - name: Configure Automated Git Profile
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@://github.com"  
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: '3.11'
           cache: pip
       - name: Install dependencies
         run: pip install --requirement requirements-freeze.txt
