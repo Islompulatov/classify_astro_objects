@@ -45,8 +45,10 @@ jobs:
         uses: google-github-actions/auth@v3
         with:
           credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}'
-      #- name: Train model
-      #  run: dvc repro --pull
+      - name: Train model
+        run: |
+            dvc doctor
+            dvc repro --pull -v
       - name: Setup CML
         if: github.event_name == 'pull_request'
         uses: iterative/setup-cml@v2
