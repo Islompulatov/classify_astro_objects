@@ -12,15 +12,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-  statuses: write
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  GCP_CONTAINER_REGISTRY_HOST: ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}
-
 jobs:
   train-report-and-publish:
     permissions: write-all
@@ -32,7 +23,7 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-          cache: pip   
+          cache: pip
       - name: Install dependencies
         run: pip install --requirement requirements-freeze.txt
       - name: Login to Google Cloud
@@ -94,7 +85,6 @@ jobs:
 
           # Publish the CML report
           cml comment update --target=pr --publish report.md
-
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -115,4 +105,4 @@ jobs:
             --image-tag ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:latest \
             --image-tag ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:${{ github.sha }}
           # Push the container to the Container Registry
-          docker push --all-tags ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier    
+          docker push --all-tags ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier 
