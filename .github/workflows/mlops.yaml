@@ -12,37 +12,13 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
-  statuses: write
-
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  GCP_CONTAINER_REGISTRY_HOST: ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}
-
 jobs:
-  train-report-publish-and-deploy:
+  train-report-and-publish:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-      - name: Configure Automated Git Profile
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@://github.com"
-          
-          # 🛠️ ADD THIS CRITICAL LINE TO STOP GIT HELPERS FROM INTERCEPTING AUTH
-          git config --global credential.helper ""    
-      - name: Configure Automated Git Profile
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@://github.com"  
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -130,19 +106,3 @@ jobs:
             --image-tag ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:${{ github.sha }}
           # Push the container to the Container Registry
           docker push --all-tags ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier
-      - name: Get Google Cloud's Kubernetes credentials
-        if: github.ref == 'refs/heads/main'
-        uses: google-github-actions/get-gke-credentials@v3
-        with:
-          cluster_name: ${{ secrets.GCP_K8S_CLUSTER_NAME }}
-          location: ${{ secrets.GCP_K8S_CLUSTER_ZONE }}
-      - name: Update the Kubernetes deployment
-        if: github.ref == 'refs/heads/main'
-        run: |
-          yq -i '.spec.template.spec.containers[0].image = "${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:${{ github.sha }}"' kubernetes/deployment.yaml
-      - name: Deploy the model on Kubernetes
-        if: github.ref == 'refs/heads/main'
-        run: |
-          kubectl apply \
-            -f kubernetes/deployment.yaml \
-            -f kubernetes/service.yaml     
