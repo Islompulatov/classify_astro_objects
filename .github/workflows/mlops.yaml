@@ -93,7 +93,7 @@ jobs:
           password: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       - name: Pull artifacts from DVC
         run: |
-          dvc pull model/celestial_bodies_classifier_model.bentomodel.dvc    
+          dvc pull    
       - name: Import the BentoML model
         if: github.ref == 'refs/heads/main'
         run: | 
