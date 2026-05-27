@@ -28,6 +28,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: true
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -36,7 +39,7 @@ jobs:
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20'    
+          node-version: '24'    
       - name: Install dependencies
         run: pip install --requirement requirements-freeze.txt
       - name: Login to Google Cloud
