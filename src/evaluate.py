@@ -134,7 +134,6 @@ def main() -> None:
         bentoml.models.import_model(f"{model_folder.absolute()}/celestial_bodies_classifier_model.bentomodel")
     except bentoml.exceptions.BentoMLException:
         print("Model already exists in the model store - skipping import.")
-    
 
     # Load model
     model = bentoml.keras.load_model("celestial_bodies_classifier_model")

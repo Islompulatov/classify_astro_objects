@@ -12,30 +12,22 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  GCP_CONTAINER_REGISTRY_HOST: ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}
-
 jobs:
-  train-report-publish-and-deploy:
-    permissions:
-      contents: write
-      pull-requests: write
-      packages: write
+  train-report-and-publish:
+    permissions: 
+        contents: write
+        pull-requests: write
+        packages: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: true
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: pip
-      - name: Setup Node.js Environment
+      - name: Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: '22'    
@@ -58,21 +50,21 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Fetch all other Git branches
-          git fetch origin main
+          git fetch --depth=1 origin main:main
 
           # Add title to the report
           echo "# Experiment Report (${{ github.sha }})" >> report.md
 
           # Compare parameters to main branch
           echo "## Params workflow vs. main" >> report.md
-          dvc params diff origin/main --md >> report.md
+          dvc params diff main --md >> report.md
 
           # Compare metrics to main branch
           echo "## Metrics workflow vs. main" >> report.md
-          dvc metrics diff origin/main --md >> report.md
+          dvc metrics diff main --md >> report.md
 
           # Compare plots (images) to main branch
-          dvc plots diff origin/main
+          dvc plots diff main
 
           # Create plots
           echo "## Plots" >> report.md
@@ -106,6 +98,9 @@ jobs:
           registry: ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}
           username: _json_key
           password: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      - name: Import the BentoML model
+        if: github.ref == 'refs/heads/main'
+        run: bentoml models import model/celestial_bodies_classifier_model.bentomodel
       - name: Build the BentoML model artifact
         if: github.ref == 'refs/heads/main'
         run: bentoml build src
@@ -117,20 +112,4 @@ jobs:
             --image-tag ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:latest \
             --image-tag ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:${{ github.sha }}
           # Push the container to the Container Registry
-          docker push --all-tags ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier 
-      - name: Get Google Cloud's Kubernetes credentials
-        if: github.ref == 'refs/heads/main'
-        uses: google-github-actions/get-gke-credentials@v3
-        with:
-          cluster_name: ${{ secrets.GCP_K8S_CLUSTER_NAME }}
-          location: ${{ secrets.GCP_K8S_CLUSTER_ZONE }}
-      - name: Update the Kubernetes deployment
-        if: github.ref == 'refs/heads/main'
-        run: |
-          yq -i '.spec.template.spec.containers[0].image = "${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier:${{ github.sha }}"' kubernetes/deployment.yaml
-      - name: Deploy the model on Kubernetes
-        if: github.ref == 'refs/heads/main'
-        run: |
-          kubectl apply \
-            -f kubernetes/deployment.yaml \
-            -f kubernetes/service.yaml    
+          docker push --all-tags ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}/celestial-bodies-classifier  
