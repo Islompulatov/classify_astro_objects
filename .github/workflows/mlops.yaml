@@ -46,9 +46,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}'
       - name: Train model
-        run: |
-            dvc doctor
-            dvc repro --pull -v
+        run: dvc repro --pull
       - name: Setup CML
         if: github.event_name == 'pull_request'
         uses: iterative/setup-cml@v2
@@ -108,6 +106,11 @@ jobs:
           registry: ${{ secrets.GCP_CONTAINER_REGISTRY_HOST }}
           username: _json_key
           password: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+      - name: Debug model files
+        run: |
+          pwd
+          ls -R
+          find . -name "*.bentomodel"    
       - name: Import the BentoML model
         if: github.ref == 'refs/heads/main'
         run: bentoml models import model/celestial_bodies_classifier_model.bentomodel
