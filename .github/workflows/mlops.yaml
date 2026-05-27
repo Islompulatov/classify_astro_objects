@@ -22,8 +22,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: '3.11'
           cache: pip
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'    
       - name: Install dependencies
         run: pip install --requirement requirements-freeze.txt
       - name: Login to Google Cloud
