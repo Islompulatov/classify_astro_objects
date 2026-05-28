@@ -22,9 +22,8 @@ jobs:
         contents: write
         pull-requests: write
         packages: write
-        runs-on: self-hosted
-        if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
