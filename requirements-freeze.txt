@@ -225,7 +225,6 @@ packaging==25.0
 pandas==3.0.3
 pandocfilters==1.5.1
 parso==0.8.5
-pathspec==0.11.2
 pexpect==4.9.0
 pillow==11.3.0
 pip-requirements-parser==32.0.1
@@ -284,7 +283,6 @@ ruamel.yaml==0.19.1
 rules==3.4
 s3transfer==0.17.1
 schema==0.7.8
-scmrepo==3.6.2
 semver==3.0.4
 Send2Trash==1.8.3
 sentry-sdk==2.61.0
