@@ -160,7 +160,16 @@ jobs:
         with:
           credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}'   
       - name: Check model
-        run: dvc repro --pull    
+        run: |
+          pip install "pathspec<1.0.0"
+          dvc repro --pull   
+      - name: Import Model to BentoML Store
+        run: |
+          bentoml models import model/celestial_bodies_classifier_model.bentomodel     
+      - name: Inspect Stored Model Name
+        run: |
+          echo "=== Live BentoML Store Contents ==="
+          bentoml models list
       - name: Log in to the Container registry
         uses: docker/login-action@v4
         with:

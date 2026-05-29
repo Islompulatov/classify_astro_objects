@@ -35,4 +35,4 @@ spec:
           cpu: "1"
           memory: "4Gi"
   nodeSelector:
-    gpu: "false"
+    gpu: "true"
