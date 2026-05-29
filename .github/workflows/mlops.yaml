@@ -74,8 +74,8 @@ jobs:
         run: pip install --requirement requirements-freeze.txt
       - name: Fix DVC dependency issue
         run: |
-            pip uninstall -y pathspec
-            pip install "pathspec>=0.12.1"  
+          pip uninstall -y pathspec
+          pip install "pathspec>=0.12.1"  
       - name: Login to Google Cloud
         uses: google-github-actions/auth@v3
         with:
@@ -161,8 +161,8 @@ jobs:
         run: pip install --requirement requirements-freeze.txt
       - name: Fix DVC dependency issue
         run: |
-            pip uninstall -y pathspec
-            pip install "pathspec>=0.12.1"
+          pip uninstall -y pathspec
+          pip install "pathspec>=0.12.1"
       - name: Login to Google Cloud
         uses: google-github-actions/auth@v3
         with:
