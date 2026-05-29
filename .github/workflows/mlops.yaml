@@ -162,10 +162,15 @@ jobs:
       - name: Check model
         run: |
           pip install "pathspec<1.0.0"
-          dvc repro --pull   
+          dvc repro --pull
+          ls -lah model/
+          test -f model/celestial_bodies_classifier_model.bentomodel   
       - name: Import Model to BentoML Store
         run: |
-          bentoml models import model/celestial_bodies_classifier_model.bentomodel     
+          pwd
+          ls -lah
+          ls -lah model/
+          bentoml models import ./model/celestial_bodies_classifier_model.bentomodel    
       - name: Inspect Stored Model Name
         run: |
           echo "=== Live BentoML Store Contents ==="
